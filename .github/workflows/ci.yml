@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI & Auto Publish
 
 on:
   push:
@@ -7,9 +7,10 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-and-build:
     name: Test & Build
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,11 +18,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run lint
         run: npm run lint
@@ -29,20 +30,19 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
-      - name: Run tests with coverage
+      - name: Run tests
         run: npm run test:coverage
 
       - name: Build package
         run: npm run build
 
-  release:
-    name: Release & Publish
-    needs: test
-    if: github.ref == 'refs/heads/main'
+  publish:
+    name: Auto Version & Publish to npm
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
     steps:
       - name: Checkout repository
@@ -53,21 +53,31 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: 20
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build package
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Auto-Bump Patch Version
+        run: |
+          npm version patch -m "chore(release): %s [skip ci]"
+
+      - name: Rebuild Distribution Bundle
         run: npm run build
 
-      - name: Create release PR or publish to npm
-        uses: changesets/action@v1
-        with:
-          publish: npx changeset publish
-          version: npx changeset version
+      - name: Push Version Bump to GitHub
+        run: |
+          git push origin main --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm Registry
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
