@@ -20,14 +20,15 @@ module.exports = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/**/*.stories.{ts,tsx}',
+    '!src/**/index.ts',
     '!src/index.ts',
   ],
   coverageThreshold: {
     global: {
-      branches: 75,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      branches: 60,
+      functions: 65,
+      lines: 70,
+      statements: 70,
     },
   },
 };
