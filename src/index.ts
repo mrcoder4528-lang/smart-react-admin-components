@@ -7,6 +7,8 @@ export * from './components/StatusBadge';
 export * from './components/ActionMenu';
 export * from './components/EmptyState';
 export * from './components/ConfirmDialog';
+export * from './components/SmartAvatar';
+export * from './components/SmartMedia';
 
 // Skeletons
 export * from './skeletons';
