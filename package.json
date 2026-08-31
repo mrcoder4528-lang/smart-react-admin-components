@@ -1,9 +1,9 @@
 {
   "name": "smart-react-admin-components",
-  "version": "0.1.0",
+  "version": "0.1.0+1",
   "description": "Lightweight, accessible, TypeScript-first React components for building admin dashboards fast.",
   "license": "MIT",
-  "author": "Vijay <mr.coder4528@gmail.com>",
+  "author": "Vijay Kumawat <mr.coder4528@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mrcoder4528-lang/smart-react-admin-components.git"
