@@ -1,0 +1,14 @@
+src/
+*.test.ts
+*.test.tsx
+*.stories.tsx
+.github/
+.changeset/
+tsconfig.json
+tsup.config.ts
+jest.config.ts
+jest.setup.ts
+__mocks__/
+.eslintrc.cjs
+.prettierrc
+coverage/
